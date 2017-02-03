@@ -71,18 +71,18 @@ public class Player : MonoBehaviour {
         //only check on frame when pressed to avoid unnessesary jumping
         if (Input.GetKeyDown(KeyCode.UpArrow))
         {
-            //If on wall and pressing button towards that wall allow walljump
-            if ((hitLeftWall) && (Input.GetKey(KeyCode.LeftArrow)))
-                rb.velocity = new Vector3(jump, jump, rb.velocity.z);
-            else if ((hitRightWall) && (Input.GetKey(KeyCode.RightArrow)))
-                rb.velocity = new Vector3(-jump, jump, rb.velocity.z);
             upPressedTimer = checkDelay;
         }
         //Check if jump pressed for more that one frame for nicer controling but preventing autojump with a timer
         else if ((Input.GetKey(KeyCode.UpArrow)) && (upPressedTimer > 0))
         {
             //Only allow jumping while on the ground
-            if (hitGround)
+            //If on wall and pressing button towards that wall allow walljump
+            if ((hitLeftWall) && (Input.GetKey(KeyCode.LeftArrow)))
+                rb.velocity = new Vector3(jump, jump, rb.velocity.z);
+            else if ((hitRightWall) && (Input.GetKey(KeyCode.RightArrow)))
+                rb.velocity = new Vector3(-jump, jump, rb.velocity.z);
+            else if (hitGround)
                 rb.velocity = new Vector3(rb.velocity.x, jump, rb.velocity.z);
         }
         //Deplete upPressedTimer so that you cannot hold up
