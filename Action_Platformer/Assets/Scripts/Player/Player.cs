@@ -4,97 +4,46 @@ using System.Collections;
 public class Player : MonoBehaviour {
 
     public float speed;
-    public float acc;
-    public float drag;
+    public float jump;
     public float maxSpeed;
+    Rigidbody rb;
     
 
 	// Use this for initialization
 	void Start () {
-	
+        rb = gameObject.GetComponent<Rigidbody>();
+        jump *= 100;
 	}
 	
 	// Update is called once per frame
 	void Update () {
-
-
-        if (speed == 0)
+        if (Input.GetKey(KeyCode.LeftArrow) && Input.GetKey(KeyCode.RightArrow))
         {
-            if (Input.GetKey(KeyCode.LeftArrow) && Input.GetKey(KeyCode.RightArrow))
-            {
 
-            }
-            else if (Input.GetKey(KeyCode.LeftArrow))
-            {
-                speed -= acc;
-            }
-            else if (Input.GetKey(KeyCode.RightArrow))
-            {
-                speed += acc;
-            }
         }
-
-        else if (speed < 0)
+        else if (Input.GetKey(KeyCode.LeftArrow))
         {
-            if (Input.GetKey(KeyCode.LeftArrow) && Input.GetKey(KeyCode.RightArrow))
-            {
-
-            }
-            else if (Input.GetKey(KeyCode.LeftArrow))
-            {
-                speed -= acc;
-            }
-            else if (Input.GetKey(KeyCode.RightArrow))
-            {
-                speed += acc;
-            }
-            else
-            {
-                if (-drag < speed)
-                {
-                    speed = 0;
-                }
-                else
-                {
-                    speed += drag;
-                }
-            }
+            rb.AddForce(-speed,0,0);
         }
-        else if (speed > 0)
+        else if (Input.GetKey(KeyCode.RightArrow))
         {
-            if (Input.GetKey(KeyCode.LeftArrow) && Input.GetKey(KeyCode.RightArrow))
-            {
-
-            }
-            else if (Input.GetKey(KeyCode.LeftArrow))
-            {
-                speed -= acc;
-            }
-            else if (Input.GetKey(KeyCode.RightArrow))
-            {
-                speed += acc;
-            }
-            else
-            {
-                if (drag > speed)
-                {
-                    speed = 0;
-                }
-                else
-                {
-                    speed -= drag;
-                }
-            }
+            rb.AddForce(speed, 0, 0);
         }
-        if (speed < -maxSpeed)
+        if (Input.GetKeyDown(KeyCode.UpArrow))
         {
-            speed = -maxSpeed;
+            rb.AddForce(0, jump, 0);
         }
-        if (speed > maxSpeed)
-        {
-            speed = maxSpeed;
-        }
+    }
 
-        transform.position = new Vector3(transform.position.x + speed, transform.position.y, transform.position.z);
-	}
+    void FixedUpdate()
+    {
+        if (rb.velocity.x > maxSpeed)
+        {
+            rb.velocity = new Vector3(maxSpeed, rb.velocity.y, rb.velocity.z);
+        }
+        if (rb.velocity.x < -maxSpeed)
+        {
+            rb.velocity = new Vector3(-maxSpeed, rb.velocity.y, rb.velocity.z);
+        }
+    }
 }
