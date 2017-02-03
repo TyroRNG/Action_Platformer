@@ -11,11 +11,13 @@ public class Player : MonoBehaviour {
 
     //Frame timer for jumping to feel more resposive
     int upPressedTimer = 0;
-    int checkDelay = 5;
+    int checkDelay = 10;
 
     //Variables for directional collision detection
     //Down collision detection
     bool hitGround;
+    bool hitGround1;
+    bool hitGround2;
     float RaycastDistGround = 0.5f;
     //Up collision detection
     bool hitCeiling;
@@ -32,27 +34,22 @@ public class Player : MonoBehaviour {
     // Use this for initialization
     void Start () {
         rb = gameObject.GetComponent<Rigidbody>();
-        //jump *= 100;
-
 	}
 	
 	// Update is called once per frame
 	void Update () {
 
         //Check if touching ground, wall and/or ceiling and direction
-        hitGround = Physics.Raycast(transform.position, Vector3.down, RaycastDistGround, GroundLayer);
+        //Check the edges of the cube if standing on a ledge (allows jumping while more than halve over a ledge)
+        hitGround1 = Physics.Raycast(new Vector3(transform.position.x - 0.49f, transform.position.y, transform.position.z), Vector3.down, RaycastDistGround, GroundLayer);
+        hitGround2 = Physics.Raycast(new Vector3(transform.position.x + 0.49f, transform.position.y, transform.position.z), Vector3.down, RaycastDistGround, GroundLayer);
+        if (hitGround1 || hitGround2)
+            hitGround = true;
+        else
+            hitGround = false;
         hitCeiling = Physics.Raycast(transform.position, Vector3.up, RaycastDistCeiling, GroundLayer);
         hitLeftWall = Physics.Raycast(transform.position, Vector3.left, RaycastDistGround, GroundLayer);
         hitRightWall = Physics.Raycast(transform.position, Vector3.right, RaycastDistGround, GroundLayer);
-
-        /*
-        Collsion checks debuging
-
-        Debug.Log(hitGround);
-        Debug.Log(hitCeiling);
-        Debug.Log(hitLeftWall);
-        Debug.Log(hitRightWall);
-        */
 
         //Prevent double controles
         if (Input.GetKey(KeyCode.LeftArrow) && Input.GetKey(KeyCode.RightArrow))
@@ -92,6 +89,13 @@ public class Player : MonoBehaviour {
 
     void FixedUpdate()
     {
+        if (!hitGround)
+        {
+            rb.AddForce(0, -9.81f * rb.mass, 0);
+        }
+
+
+
         //Set a max X speed to prevent lightspeed 
         if (rb.velocity.x > maxSpeed)
         {
@@ -111,6 +115,5 @@ public class Player : MonoBehaviour {
             rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
         if ((hitCeiling) && (rb.velocity.y > 0))
             rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
-
     }
 }
