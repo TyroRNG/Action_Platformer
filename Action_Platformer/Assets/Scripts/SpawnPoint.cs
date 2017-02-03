@@ -8,10 +8,10 @@ public class SpawnPoint : MonoBehaviour {
 	// Update is called once per frame
 	void FixedUpdate () {
         //If there is no child (player) spawn a player and make it a child
-        if (transform.childCount == 0)
+        if (GameObject.FindGameObjectWithTag("Player") == null)
         {
-            GameObject playerClone = (GameObject)Instantiate(player, transform.position, Quaternion.identity);
-            playerClone.transform.parent = gameObject.transform;
+            GameObject playerClone = (GameObject)Instantiate(player, new Vector3(transform.position.x, transform.position.y, 0), Quaternion.identity);
+            //playerClone.transform.parent = gameObject.transform;
         }
 	}
 }
