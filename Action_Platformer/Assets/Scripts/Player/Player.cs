@@ -7,25 +7,26 @@ public class Player : MonoBehaviour {
     public float speed;
     public float jump;
     public float maxSpeed;
+    public float drag;
     Rigidbody rb;
 
     //Frame timer for jumping to feel more resposive
     int upPressedTimer = 0;
-    int checkDelay = 10;
+    int checkDelay = 5;
 
     //Variables for directional collision detection
     //Down collision detection
     bool hitGround;
     bool hitGround1;
     bool hitGround2;
-    float RaycastDistGround = 0.5f;
+    float RaycastDistGround = 0.50f;
     //Up collision detection
     bool hitCeiling;
-    float RaycastDistCeiling = 0.5f;
+    float RaycastDistCeiling = 0.50f;
     //Left and Right collision detection
     bool hitLeftWall;
     bool hitRightWall;
-    float RaycastDistWall = 0.5f;
+    float RaycastDistWall = 0.50f;
     //Only detect objects marked als ground blocks
     public LayerMask GroundLayer;
 
@@ -51,9 +52,19 @@ public class Player : MonoBehaviour {
         hitLeftWall = Physics.Raycast(transform.position, Vector3.left, RaycastDistGround, GroundLayer);
         hitRightWall = Physics.Raycast(transform.position, Vector3.right, RaycastDistGround, GroundLayer);
 
+        /*
+        Debug.Log(hitCeiling);
+        Debug.Log(hitRightWall);
+        Debug.Log(hitLeftWall);
+        Debug.Log(hitGround);
+        */
+
         //Prevent double controles
         if (Input.GetKey(KeyCode.LeftArrow) && Input.GetKey(KeyCode.RightArrow))
-        {}
+        {
+            if (hitGround)
+                Drag();
+        }
         //Movement on X
         else if (Input.GetKey(KeyCode.LeftArrow))
         {
@@ -62,6 +73,11 @@ public class Player : MonoBehaviour {
         else if (Input.GetKey(KeyCode.RightArrow))
         {
             rb.AddForce(speed, 0, 0);
+        }
+        else
+        {
+            if (hitGround)
+                Drag();
         }
 
         //Jump Controles
@@ -85,17 +101,29 @@ public class Player : MonoBehaviour {
         //Deplete upPressedTimer so that you cannot hold up
         if (upPressedTimer > 0)
             upPressedTimer--;
+
+        //Gravity simulation
+        if (hitGround)
+        { }
+        //When on wall slide down slower
+        else if (((hitLeftWall) && (Input.GetKey(KeyCode.LeftArrow))) || ((hitRightWall) && (Input.GetKey(KeyCode.RightArrow))))
+        {
+            //Gravity isn't weaker when sliding up a wall
+            if (rb.velocity.y >= -0.01f)
+                rb.AddForce(0, -9.81f * rb.mass, 0);
+            //Slide down slower when already going down
+            else
+                rb.AddForce(0, -2.4525f * rb.mass, 0);
+        }
+        //If not on ground or on wall apply normal gravity 
+        else
+        {
+            rb.AddForce(0, -9.81f * rb.mass, 0);
+        }
     }
 
     void FixedUpdate()
     {
-        if (!hitGround)
-        {
-            rb.AddForce(0, -9.81f * rb.mass, 0);
-        }
-
-
-
         //Set a max X speed to prevent lightspeed 
         if (rb.velocity.x > maxSpeed)
         {
@@ -115,5 +143,24 @@ public class Player : MonoBehaviour {
             rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
         if ((hitCeiling) && (rb.velocity.y > 0))
             rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
+    }
+
+    void Drag()
+    {
+        //Custom drag
+        if (rb.velocity.x > 0)
+        {
+            if (rb.velocity.x < drag)
+                rb.velocity = new Vector3(0, rb.velocity.y, rb.velocity.z);
+            else
+                rb.velocity = new Vector3(rb.velocity.x - drag, rb.velocity.y, rb.velocity.z);
+        }
+        else if (rb.velocity.x < 0)
+        {
+            if (rb.velocity.x > -drag)
+                rb.velocity = new Vector3(0, rb.velocity.y, rb.velocity.z);
+            else
+                rb.velocity = new Vector3(rb.velocity.x + drag, rb.velocity.y, rb.velocity.z);
+        }
     }
 }

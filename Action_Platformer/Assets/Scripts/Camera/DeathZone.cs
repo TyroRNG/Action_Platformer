@@ -14,12 +14,6 @@ public class DeathZone : MonoBehaviour {
     // Use this for initialization
     void Start() {
         cam = transform.GetComponent<Camera>();
-        hightOffSet = cam.orthographicSize + 0.5f;
-        widthOffSet = (cam.orthographicSize * 2.5f) + 0.5f;
-        leftLimmit = transform.position.x - widthOffSet;
-        rightLimmit = transform.position.x + widthOffSet;
-        upLimmit = transform.position.y + hightOffSet;
-        downLimmit = transform.position.y - hightOffSet;
     }
 
     // Update is called once per frame
@@ -35,5 +29,12 @@ public class DeathZone : MonoBehaviour {
             if ((player.transform.position.y > upLimmit) || (player.transform.position.y < downLimmit))
                 Destroy(player);
         }
+
+        hightOffSet = cam.orthographicSize + 0.5f;
+        widthOffSet = (cam.orthographicSize * 2.5f) + 0.5f;
+        leftLimmit = transform.position.x - widthOffSet;
+        rightLimmit = transform.position.x + widthOffSet;
+        upLimmit = transform.position.y + hightOffSet;
+        downLimmit = transform.position.y - hightOffSet;
     }
 }
