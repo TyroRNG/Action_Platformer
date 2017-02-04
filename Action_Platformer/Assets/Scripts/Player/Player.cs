@@ -11,7 +11,7 @@ public class Player : MonoBehaviour {
 
     //Frame timer for jumping to feel more resposive
     int upPressedTimer = 0;
-    int checkDelay = 10;
+    int checkDelay = 5;
 
     //Variables for directional collision detection
     //Down collision detection
@@ -85,14 +85,30 @@ public class Player : MonoBehaviour {
         //Deplete upPressedTimer so that you cannot hold up
         if (upPressedTimer > 0)
             upPressedTimer--;
+
+        //Gravity simulation
+        if (hitGround)
+        { }
+        //When on wall slide down slower
+        else if (((hitLeftWall) && (Input.GetKey(KeyCode.LeftArrow))) || ((hitRightWall) && (Input.GetKey(KeyCode.RightArrow))))
+        {
+            //Gravity isn't weaker when sliding up a wall
+            if (rb.velocity.y >= -0.01f)
+                rb.AddForce(0, -9.81f * rb.mass, 0);
+            //Slide down slower when already going down
+            else
+                rb.AddForce(0, -2.4525f * rb.mass, 0);
+        }
+        //If not on ground or on wall apply normal gravity 
+        else
+        {
+            rb.AddForce(0, -9.81f * rb.mass, 0);
+        }
     }
 
     void FixedUpdate()
     {
-        if (!hitGround)
-        {
-            rb.AddForce(0, -9.81f * rb.mass, 0);
-        }
+        
 
 
 
