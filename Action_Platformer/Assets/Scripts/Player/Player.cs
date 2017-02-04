@@ -7,6 +7,7 @@ public class Player : MonoBehaviour {
     public float speed;
     public float jump;
     public float maxSpeed;
+    public float drag;
     Rigidbody rb;
 
     //Frame timer for jumping to feel more resposive
@@ -18,14 +19,14 @@ public class Player : MonoBehaviour {
     bool hitGround;
     bool hitGround1;
     bool hitGround2;
-    float RaycastDistGround = 0.5f;
+    float RaycastDistGround = 0.50f;
     //Up collision detection
     bool hitCeiling;
-    float RaycastDistCeiling = 0.5f;
+    float RaycastDistCeiling = 0.50f;
     //Left and Right collision detection
     bool hitLeftWall;
     bool hitRightWall;
-    float RaycastDistWall = 0.5f;
+    float RaycastDistWall = 0.50f;
     //Only detect objects marked als ground blocks
     public LayerMask GroundLayer;
 
@@ -51,9 +52,19 @@ public class Player : MonoBehaviour {
         hitLeftWall = Physics.Raycast(transform.position, Vector3.left, RaycastDistGround, GroundLayer);
         hitRightWall = Physics.Raycast(transform.position, Vector3.right, RaycastDistGround, GroundLayer);
 
+        /*
+        Debug.Log(hitCeiling);
+        Debug.Log(hitRightWall);
+        Debug.Log(hitLeftWall);
+        Debug.Log(hitGround);
+        */
+
         //Prevent double controles
         if (Input.GetKey(KeyCode.LeftArrow) && Input.GetKey(KeyCode.RightArrow))
-        {}
+        {
+            if (hitGround)
+                Drag();
+        }
         //Movement on X
         else if (Input.GetKey(KeyCode.LeftArrow))
         {
@@ -62,6 +73,11 @@ public class Player : MonoBehaviour {
         else if (Input.GetKey(KeyCode.RightArrow))
         {
             rb.AddForce(speed, 0, 0);
+        }
+        else
+        {
+            if (hitGround)
+                Drag();
         }
 
         //Jump Controles
@@ -108,10 +124,6 @@ public class Player : MonoBehaviour {
 
     void FixedUpdate()
     {
-        
-
-
-
         //Set a max X speed to prevent lightspeed 
         if (rb.velocity.x > maxSpeed)
         {
@@ -131,5 +143,24 @@ public class Player : MonoBehaviour {
             rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
         if ((hitCeiling) && (rb.velocity.y > 0))
             rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
+    }
+
+    void Drag()
+    {
+        //Custom drag
+        if (rb.velocity.x > 0)
+        {
+            if (rb.velocity.x < drag)
+                rb.velocity = new Vector3(0, rb.velocity.y, rb.velocity.z);
+            else
+                rb.velocity = new Vector3(rb.velocity.x - drag, rb.velocity.y, rb.velocity.z);
+        }
+        else if (rb.velocity.x < 0)
+        {
+            if (rb.velocity.x > -drag)
+                rb.velocity = new Vector3(0, rb.velocity.y, rb.velocity.z);
+            else
+                rb.velocity = new Vector3(rb.velocity.x + drag, rb.velocity.y, rb.velocity.z);
+        }
     }
 }
