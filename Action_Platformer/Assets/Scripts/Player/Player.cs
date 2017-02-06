@@ -22,10 +22,16 @@ public class Player : MonoBehaviour {
     float RaycastDistGround = 0.50f;
     //Up collision detection
     bool hitCeiling;
+    bool hitCeiling1;
+    bool hitCeiling2;
     float RaycastDistCeiling = 0.50f;
     //Left and Right collision detection
     bool hitLeftWall;
+    bool hitLeftWall1;
+    bool hitLeftWall2;
     bool hitRightWall;
+    bool hitRightWall1;
+    bool hitRightWall2;
     float RaycastDistWall = 0.50f;
     //Only detect objects marked als ground blocks
     public LayerMask GroundLayer;
@@ -48,10 +54,24 @@ public class Player : MonoBehaviour {
             hitGround = true;
         else
             hitGround = false;
-        hitCeiling = Physics.Raycast(transform.position, Vector3.up, RaycastDistCeiling, GroundLayer);
-        hitLeftWall = Physics.Raycast(transform.position, Vector3.left, RaycastDistGround, GroundLayer);
-        hitRightWall = Physics.Raycast(transform.position, Vector3.right, RaycastDistGround, GroundLayer);
-
+        hitCeiling1 = Physics.Raycast(new Vector3(transform.position.x - 0.49f, transform.position.y, transform.position.z), Vector3.up, RaycastDistGround, GroundLayer);
+        hitCeiling2 = Physics.Raycast(new Vector3(transform.position.x + 0.49f, transform.position.y, transform.position.z), Vector3.up, RaycastDistGround, GroundLayer);
+        if (hitCeiling1 || hitCeiling2)
+            hitCeiling = true;
+        else
+            hitCeiling = false;
+        hitLeftWall1 = Physics.Raycast(new Vector3(transform.position.x, transform.position.y - 0.49f, transform.position.z), Vector3.left, RaycastDistGround, GroundLayer);
+        hitLeftWall2 = Physics.Raycast(new Vector3(transform.position.x, transform.position.y + 0.49f, transform.position.z), Vector3.left, RaycastDistGround, GroundLayer);
+        if (hitLeftWall1 || hitLeftWall2)
+            hitLeftWall = true;
+        else
+            hitLeftWall = false;
+        hitRightWall1 = Physics.Raycast(new Vector3(transform.position.x, transform.position.y - 0.49f, transform.position.z), Vector3.right, RaycastDistGround, GroundLayer);
+        hitRightWall2 = Physics.Raycast(new Vector3(transform.position.x, transform.position.y + 0.49f, transform.position.z), Vector3.right, RaycastDistGround, GroundLayer);
+        if (hitRightWall1 || hitRightWall2)
+            hitRightWall = true;
+        else
+            hitRightWall = false;
         /*
         Debug.Log(hitCeiling);
         Debug.Log(hitRightWall);
